@@ -1,1 +1,1 @@
-# The default Preonic layout - largely based on the Planck's
+#  Preonic layout - emulating a num pad removing dulpacate keys
