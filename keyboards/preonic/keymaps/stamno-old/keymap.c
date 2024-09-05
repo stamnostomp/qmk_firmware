@@ -1,6 +1,5 @@
 /* Copyright 2015-2021 Jack Humbert
  *
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
@@ -20,7 +19,6 @@
 
 enum preonic_layers {
   _QWERTY,
-  _COLEMAK,
   _DVORAK,
   _LOWER,
   _RAISE,
@@ -29,7 +27,6 @@ enum preonic_layers {
 
 enum preonic_keycodes {
   QWERTY = SAFE_RANGE,
-  COLEMAK,
   DVORAK,
   LOWER,
   RAISE,
@@ -122,14 +119,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, _______, _______, _______, _______, _______, _______, _______, KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY
 ),
 
-
 /* Adjust (Lower + Raise)
  * ,-----------------------------------------------------------------------------------.
- * |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |  F7  |  F8  |  F9  |  F10 |  F11 |  F12 |
+ * |  F1  | RGBT | RGBM | RGBH+| RGBS+| RGBV+|RGBSP+|  F8  |  F9  |  F10 |  F11 |  F12 |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      | Reset| Debug|      |      |      |      |      |      |      |      |  Del |
+ * |      | Reset| Debug| RGBH-| RGBS-| RGBV-|RGBSP-|TermOf|TermOn|      |      |  Del |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |Aud cy|Aud on|AudOff|AGnorm|AGswap|Qwerty|Colemk|Dvorak|      |      |
+ * |      |      |Aud cy|Aud on|AudOff|AGnorm|AGswap|Qwerty|      |Dvorak|      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |Voice-|Voice+|Mus on|MusOff|MidiOn|MidOff|      |      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -137,10 +133,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_preonic_grid(
-  RGB_TOG, RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, _______,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
-  _______, QK_BOOT, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD, _______, _______, _______, KC_DEL,
-  _______, DB_TOGG, MU_NEXT, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  _______, DVORAK,  _______, _______,
-  _______, AU_PREV, AU_NEXT, MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______, _______,
+  KC_F1,   RGB_TOG, RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
+  _______, RESET,   DEBUG,   RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD, TERM_ON, TERM_OFF,_______, _______, KC_DEL,
+  _______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  _______, DVORAK,  _______, _______,
+  _______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______, _______,
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 )
 
@@ -152,12 +148,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case QWERTY:
           if (record->event.pressed) {
             set_single_persistent_default_layer(_QWERTY);
-          }
-          return false;
-          break;
-        case COLEMAK:
-          if (record->event.pressed) {
-            set_single_persistent_default_layer(_COLEMAK);
           }
           return false;
           break;
@@ -197,12 +187,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
               rgblight_step();
             #endif
             #ifdef __AVR__
-            gpio_write_pin_low(E6);
+            writePinLow(E6);
             #endif
           } else {
             unregister_code(KC_RSFT);
             #ifdef __AVR__
-            gpio_write_pin_high(E6);
+            writePinHigh(E6);
             #endif
           }
           return false;
